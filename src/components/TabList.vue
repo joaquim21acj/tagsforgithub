@@ -1,27 +1,22 @@
 <template>
   <div class="TabList">
-    <h1>{{ msg }}</h1>
+    <!-- <h1>{{ msg }}</h1> -->
+    <h1>AQUIIII</h1>
+    <div v-if="listaRepo">
+      <p>listaRepo</p>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 export default {
-  name: "Login",
-  props: {
-    msg: String
-  },
-  data: {
-    userLogin: ""
-  },
-  methods: {
-    validateUserlogin() {
-      let vm = this;
-      if (vm.userLogin === null) alert("Preencha o nome de usuário");
-      return;
+  name: 'TabList',
+  data: function () {
+    return {
+      listaRepo: localStorage.listaRepo
     }
   }
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

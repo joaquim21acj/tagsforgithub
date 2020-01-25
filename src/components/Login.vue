@@ -9,7 +9,6 @@
       <input type="text" v-model="userLogin" class="form-control" aria-label="Username" placeholder="Username" id="user" aria-describedby="basic-addon3" />
     </div>
       <button type="button" class="btn btn-info" v-on:click="loadRespositories()">Get repositories</button>
-
   </div>
 </template>
 
@@ -25,7 +24,8 @@ export default {
     return {
       url: 'https://api.github.com/graphql',
       Authorization: 'bearer 2169cdd161b5f3a50bd495c98426b2b088ded55d',
-      token: '2169cdd161b5f3a50bd495c98426b2b088ded55d'
+      token: '2169cdd161b5f3a50bd495c98426b2b088ded55d',
+      userLogin: ''
     }
   },
   methods: {
@@ -43,7 +43,7 @@ export default {
         return
       }
       let queryGet = `{
-                            user(login: "joaquim21acj") {
+                            user(login: "` + vm.userLogin + `") {
                               id
                               starredRepositories(first: 10) {
                                 edges {
@@ -66,7 +66,8 @@ export default {
                           }`
       axios.post(vm.url, { query: queryGet }, { headers: { Authorization: 'Bearer ' + vm.token } })
         .then((response) => {
-          console.log(response)
+          console.log()
+          localStorage.listRepositories = response.data.data.user.starredRepositories
         })
         .catch((error) => {
           console.log(error)
