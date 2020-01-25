@@ -1,0 +1,22 @@
+{
+    user(login: "joaquim21acj") {
+      id
+       starredRepositories(first: 10) {
+        edges {
+          node {
+            id
+            description
+            languages(first: 10) {
+              edges {
+                node {
+                  name
+                }
+              }
+            }
+            name
+            projectsUrl
+          }
+        }
+      }
+    }
+  }
