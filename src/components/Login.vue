@@ -8,14 +8,14 @@
       </div>
       <input type="text" v-model="userLogin" class="form-control" aria-label="Username" placeholder="Username" id="user" aria-describedby="basic-addon3" />
     </div>
-      <button type="button" class="btn btn-info" v-on:click="validateUserlogin">Get repositories</button>
+      <button type="button" class="btn btn-info" v-on:click="loadRespositories()">Get repositories</button>
 
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import gql from 'graphql.macro'
+// import gql from 'graphql.macro'
 export default {
   name: 'Login',
   props: {
@@ -24,7 +24,8 @@ export default {
   data: function () {
     return {
       url: 'https://api.github.com/graphql',
-      Authorization: 'bearer 2169cdd161b5f3a50bd495c98426b2b088ded55d'
+      Authorization: 'bearer 2169cdd161b5f3a50bd495c98426b2b088ded55d',
+      token: '2169cdd161b5f3a50bd495c98426b2b088ded55d'
     }
   },
   methods: {
@@ -32,12 +33,16 @@ export default {
       let vm = this
       if (vm.userLogin === null) {
         alert('Preencha o nome de usuário')
+        return true
       }
+      return false
     },
     loadRespositories () {
       let vm = this
-      let header = vm.Authorization
-      let query = gql`{
+      if (vm.validateUserlogin()) {
+        return
+      }
+      let queryGet = `{
                             user(login: "joaquim21acj") {
                               id
                               starredRepositories(first: 10) {
@@ -59,7 +64,7 @@ export default {
                               }
                             }
                           }`
-      axios.post(vm.url, query, header)
+      axios.post(vm.url, { query: queryGet }, { headers: { Authorization: 'Bearer ' + vm.token } })
         .then((response) => {
           console.log(response)
         })
