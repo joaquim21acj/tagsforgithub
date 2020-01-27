@@ -15,6 +15,7 @@ export default {
   // },
   data: function () {
     return {
+      url: 'https://api.github.com/graphql',
       list: [],
       userLogin: '',
       token: ''
@@ -23,7 +24,7 @@ export default {
   methods: {
     loadRespositories () {
       let vm = this
-      let queryGet = `{
+      let queryGetRepo = `{
                             user(login: "` + vm.userLogin + `") {
                               id
                               starredRepositories(first: 10) {
@@ -45,11 +46,14 @@ export default {
                               }
                             }
                           }`
-      axios.post(vm.url, { query: queryGet }, { headers: { Authorization: 'Bearer ' + vm.token } })
+      console.log(vm.url)
+      console.log(queryGetRepo)
+      console.log(vm.token)
+      axios.post(vm.url, { query: queryGetRepo }, { headers: { Authorization: 'Bearer ' + vm.token } })
         .then((response) => {
           console.log('After')
           console.log(response.data.data.user)
-          vm.list = response.data.data.user.staredRepositories
+          vm.list = response.data.data.user.starredRepositories.edges
           console.log(vm.list)
         })
         .catch((error) => {
