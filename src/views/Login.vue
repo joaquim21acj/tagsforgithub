@@ -8,11 +8,12 @@
       </div>
       <input type="text" v-model="userLogin" class="form-control" aria-label="Username" placeholder="Username" id="user" aria-describedby="basic-addon3" />
     </div>
-      <button type="button" class="btn btn-info" v-on:click="loadRespositories()">Get repositories</button>
+      <button type="button" class="btn btn-info" v-on:click="validateUserlogin()">Get repositories</button>
   </div>
 </template>
 
 <script>
+import router from '../router'
 import axios from 'axios'
 // import gql from 'graphql.macro'
 export default {
@@ -23,56 +24,48 @@ export default {
   data: function () {
     return {
       url: 'https://api.github.com/graphql',
-      Authorization: 'bearer 2169cdd161b5f3a50bd495c98426b2b088ded55d',
-      token: '2169cdd161b5f3a50bd495c98426b2b088ded55d',
+      Authorization: 'bearer 612ee5167588f5ffa7ddac798350df8189713415',
+      token: '612ee5167588f5ffa7ddac798350df8189713415',
       userLogin: ''
     }
   },
   methods: {
     validateUserlogin () {
       let vm = this
-      if (vm.userLogin === null) {
+      if ((vm.userLogin === null) || (vm.userLogin === '')) {
         alert('Preencha o nome de usuário')
         return true
+      } else {
+        let resp = vm.loadRespositories()
+        if ((resp !== null) && (resp !== '')) {
+          localStorage.userLogin = vm.userLogin
+          router.push({ name: 'home' })
+        } else {
+          alert('O usuário digitado não possui repositório git')
+          return false
+        }
       }
-      return false
     },
     loadRespositories () {
       let vm = this
-      if (vm.validateUserlogin()) {
-        return
-      }
       let queryGet = `{
-                            user(login: "` + vm.userLogin + `") {
-                              id
-                              starredRepositories(first: 10) {
-                                edges {
-                                  node {
-                                    id
-                                    description
-                                    languages(first: 10) {
-                                      edges {
-                                        node {
-                                          name
-                                        }
-                                      }
-                                    }
-                                    name
-                                    projectsUrl
-                                  }
-                                }
-                              }
-                            }
-                          }`
+                        user(login: "` + vm.userLogin + `") {
+                          id
+                        }
+                      }`
       axios.post(vm.url, { query: queryGet }, { headers: { Authorization: 'Bearer ' + vm.token } })
         .then((response) => {
-          console.log()
-          localStorage.listRepositories = response.data.data.user.starredRepositories
+          return response.data.data.user.id
         })
         .catch((error) => {
           console.log(error)
+          return ''
         })
     }
+  },
+  mounted () {
+    let vm = this
+    localStorage.token = vm.token
   }
 }
 </script>
