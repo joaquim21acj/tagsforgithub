@@ -1,5 +1,20 @@
 <template>
   <div class="home">
+    <b-table striped hover :fields="fields" :items="list">
+     <template v-slot:cell(Repository)="data">
+        {{ data.item.node.name }}
+      </template>
+      <template v-slot:cell(Description)="data">
+        {{ data.item.node.description }}
+      </template>
+      <template v-slot:cell(Language)="data">
+         <p v-for="(item) in  data.item.node.languages.edges" :key="item.node.name">{{ item.node.name }}</p>
+      </template>
+      <template v-slot:cell(Description)="data" >
+        <p v-if="data.item.node.tags != null">{{ data.item.node.tags }}</p>
+        <p v-else>Adicione</p>
+      </template>
+    </b-table>
   </div>
 </template>
 
@@ -17,6 +32,7 @@ export default {
     return {
       url: 'https://api.github.com/graphql',
       list: [],
+      fields: ['Repository', 'Description', 'Language', 'Tags', 'Tools'],
       userLogin: '',
       token: ''
     }
