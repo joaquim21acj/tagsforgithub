@@ -10,11 +10,41 @@
       <template v-slot:cell(Language)="data">
          <p v-for="(item) in  data.item.node.languages.edges" :key="item.node.name">{{ item.node.name }}</p>
       </template>
-      <template v-slot:cell(Description)="data" >
+      <!-- <template v-slot:cell()="data" >
         <p v-if="data.item.node.tags != null">{{ data.item.node.tags }}</p>
         <p v-else>Adicione</p>
+      </template> -->
+      <template v-slot:cell(Tools)="data">
+        <button v-on:click="editTags(data.item, $event.target)">Edit</button>
       </template>
     </b-table>
+
+    <b-modal :id="modalEdit.id" :title="modalEdit.title" ok-only @hide="resetInfoModal">
+      <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+        <b-form-group
+          id="repoName"
+          label="Edit tags for " + modalEdit.item.name
+          label-for="inputTags"
+          description="We'll never share your email with anyone else."
+        >
+          <b-form-input
+            id="inputTags"
+            v-model="modalEdit.item.tags"
+            placeholder="tags"
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group id="input-group-4">
+          <b-form-checkbox-group v-model="form.checked" id="checkboxes-4">
+            <b-form-checkbox value="me">Check me out</b-form-checkbox>
+            <b-form-checkbox value="that">Check that out</b-form-checkbox>
+          </b-form-checkbox-group>
+        </b-form-group>
+
+        <b-button type="submit" variant="primary">Submit</b-button>
+        <b-button type="reset" variant="danger">Reset</b-button>
+      </b-form>
+    </b-modal>
   </div>
 </template>
 
@@ -32,9 +62,20 @@ export default {
     return {
       url: 'https://api.github.com/graphql',
       list: [],
-      fields: ['Repository', 'Description', 'Language', 'Tags', 'Tools'],
+      fields: [
+        { key: 'Repository', sortable: true },
+        { key: 'Description', sortable: true },
+        { key: 'Language', sortable: true },
+        { key: 'Tags', sortable: true },
+        { key: 'Tools', sortable: true }
+      ],
       userLogin: '',
-      token: ''
+      token: '',
+      modalEdit: {
+        id: 'editModal',
+        title: 'Edit tags',
+        item: {}
+      }
     }
   },
   methods: {
@@ -62,26 +103,24 @@ export default {
                               }
                             }
                           }`
-      console.log(vm.url)
-      console.log(queryGetRepo)
-      console.log(vm.token)
+
       axios.post(vm.url, { query: queryGetRepo }, { headers: { Authorization: 'Bearer ' + vm.token } })
         .then((response) => {
-          console.log('After')
-          console.log(response.data.data.user)
           vm.list = response.data.data.user.starredRepositories.edges
-          console.log(vm.list)
         })
         .catch((error) => {
+          alert('Houve um erro ao buscar os dados no git')
           console.log(error)
         })
+    },
+    editTags (data, button) {
+      console.log(data.node)
+      this.modalEdit.item = data.node
+      this.$root.$emit('bv::show::modal', this.modalEdit.id, button)
     }
   },
   mounted () {
     let vm = this
-    console.log('aqui')
-    console.log(localStorage.userLogin)
-    console.log(localStorage.token)
     vm.userLogin = localStorage.userLogin
     vm.token = localStorage.token
 
