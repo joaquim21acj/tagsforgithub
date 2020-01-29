@@ -19,13 +19,12 @@
       </template>
     </b-table>
 
-    <b-modal :id="modalEdit.id" :title="modalEdit.title" ok-only @hide="resetInfoModal">
-      <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+    <b-modal :id="modalEdit.id" :title="modalEdit.label + modalEdit.item.name" :ok-disabled="true" :cancel-disabled="true">
+      <b-form @submit="saveTags">
         <b-form-group
           id="repoName"
-          label="Edit tags for " + modalEdit.item.name
           label-for="inputTags"
-          description="We'll never share your email with anyone else."
+          description="Separate the tags by ',' : front, back"
         >
           <b-form-input
             id="inputTags"
@@ -34,15 +33,7 @@
           ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-4">
-          <b-form-checkbox-group v-model="form.checked" id="checkboxes-4">
-            <b-form-checkbox value="me">Check me out</b-form-checkbox>
-            <b-form-checkbox value="that">Check that out</b-form-checkbox>
-          </b-form-checkbox-group>
-        </b-form-group>
-
         <b-button type="submit" variant="primary">Submit</b-button>
-        <b-button type="reset" variant="danger">Reset</b-button>
       </b-form>
     </b-modal>
   </div>
@@ -74,8 +65,10 @@ export default {
       modalEdit: {
         id: 'editModal',
         title: 'Edit tags',
+        label: 'Edit tags for ',
         item: {}
-      }
+      },
+      showForm: false
     }
   },
   methods: {
@@ -116,7 +109,11 @@ export default {
     editTags (data, button) {
       console.log(data.node)
       this.modalEdit.item = data.node
+      this.showForm = true
       this.$root.$emit('bv::show::modal', this.modalEdit.id, button)
+    },
+    saveTags (data, button) {
+      alert('salvo')
     }
   },
   mounted () {
