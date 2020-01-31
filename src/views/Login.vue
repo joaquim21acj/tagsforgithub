@@ -24,8 +24,8 @@ export default {
   data: function () {
     return {
       url: 'https://api.github.com/graphql',
-      Authorization: 'bearer 8359c5f807a3cf3e031d0d02197d54a27a6396d5  ',
-      token: '8359c5f807a3cf3e031d0d02197d54a27a6396d5  ',
+      Authorization: 'bearer a0b023f5b1e4927bb9f914a50e45513456c1334c   ',
+      token: 'a0b023f5b1e4927bb9f914a50e45513456c1334c   ',
       userLogin: ''
     }
   },

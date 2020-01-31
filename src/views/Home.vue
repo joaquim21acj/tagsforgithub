@@ -1,26 +1,30 @@
 <template>
   <div class="home">
-    <b-table striped hover :fields="fields" :items="list">
-     <template v-slot:cell(Repository)="data">
-        {{ data.item.node.name }}
-      </template>
-      <template v-slot:cell(Description)="data">
-        {{ data.item.node.description }}
-      </template>
-      <template v-slot:cell(Language)="data">
-         <p v-for="(item) in  data.item.node.languages.edges" :key="item.node.name">{{ item.node.name }}</p>
-      </template>
-      <!-- <template v-slot:cell()="data" >
-        <p v-if="data.item.node.tags != null">{{ data.item.node.tags }}</p>
-        <p v-else>Adicione</p>
-      </template> -->
-      <template v-slot:cell(Tools)="data">
-        <button v-on:click="editTags(data.item, $event.target)">Edit</button>
-      </template>
-    </b-table>
-
-    <b-modal :id="modalEdit.id" :title="modalEdit.label + modalEdit.item.name" :ok-disabled="true" :cancel-disabled="true">
-      <b-form @submit="saveTags">
+    <div style="width: 90%; text-align-last: center; margin: 0 auto;">
+      <div style="width: 10%;">
+        <b-form-input v-model="searchText" placeholder="Search by tag"></b-form-input>
+      </div>
+      <b-table striped hover :fields="fields" :items="list">
+      <template v-slot:cell(Repository)="data">
+          {{ data.item.node.name }}
+        </template>
+        <template v-slot:cell(Description)="data">
+          {{ data.item.node.description }}
+        </template>
+        <template v-slot:cell(Language)="data">
+          <p v-for="(item) in  data.item.node.languages.edges" :key="item.node.name">{{ item.node.name }}</p>
+        </template>
+        <!-- <template v-slot:cell()="data" >
+          <p v-if="data.item.node.tags != null">{{ data.item.node.tags }}</p>
+          <p v-else>Adicione</p>
+        </template> -->
+        <template v-slot:cell(Tools)="data">
+          <button v-on:click="editTags(data.item, $event.target)">Edit</button>
+        </template>
+      </b-table>
+    </div>
+    <b-modal :id="modalEdit.id" :title="modalEdit.label + modalEdit.item.name" :hide-footer="true">
+      <b-form @submit="saveTags" @reset="reset">
         <b-form-group
           id="repoName"
           label-for="inputTags"
@@ -28,12 +32,14 @@
         >
           <b-form-input
             id="inputTags"
-            v-model="modalEdit.item.tags"
+            v-model="itemEdit.tags"
             placeholder="tags"
           ></b-form-input>
         </b-form-group>
-
-        <b-button type="submit" variant="primary">Submit</b-button>
+        <div style="width: 100%; text-align-last: center;">
+          <b-button type="submit" variant="outline-success" style="margin: 5px;">Save</b-button>
+          <b-button type="reset" variant="outline-danger">Cancel</b-button>
+        </div>
       </b-form>
     </b-modal>
   </div>
@@ -60,6 +66,7 @@ export default {
         { key: 'Tags', sortable: true },
         { key: 'Tools', sortable: true }
       ],
+      searchText: '',
       userLogin: '',
       token: '',
       modalEdit: {
@@ -68,6 +75,7 @@ export default {
         label: 'Edit tags for ',
         item: {}
       },
+      itemEdit: {},
       showForm: false
     }
   },
@@ -108,9 +116,13 @@ export default {
     },
     editTags (data, button) {
       console.log(data.node)
-      this.modalEdit.item = data.node
+      this.itemEdit = data.node
       this.showForm = true
       this.$root.$emit('bv::show::modal', this.modalEdit.id, button)
+    },
+    reset (data, button) {
+      this.itemEdit = {}
+      this.$root.$emit('bv::hide::modal', this.modalEdit.id, button)
     },
     saveTags (data, button) {
       alert('salvo')
