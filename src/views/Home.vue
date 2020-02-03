@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div style="width: 90%; text-align-last: center; margin: 0 auto;">
-      <div style="width: 10%;">
+      <div style="width: 20%;">
         <b-form-input v-model="searchText" placeholder="Search by tag"></b-form-input>
       </div>
       <b-table striped hover :fields="fields" :items="list">

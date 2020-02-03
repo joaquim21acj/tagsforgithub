@@ -24,8 +24,8 @@ export default {
   data: function () {
     return {
       url: 'https://api.github.com/graphql',
-      Authorization: 'bearer a0b023f5b1e4927bb9f914a50e45513456c1334c   ',
-      token: 'a0b023f5b1e4927bb9f914a50e45513456c1334c   ',
+      Authorization: 'bearer c7304fdd06182f8234e39d2bb84dcd3058f1ad52   ',
+      token: 'c7304fdd06182f8234e39d2bb84dcd3058f1ad52   ',
       userLogin: ''
     }
   },
@@ -36,31 +36,28 @@ export default {
         alert('Preencha o nome de usuário')
         return true
       } else {
-        let resp = vm.loadRespositories()
-        if ((resp !== null) && (resp !== '')) {
-          localStorage.userLogin = vm.userLogin
-          router.push({ name: 'home' })
-        } else {
-          alert('O usuário digitado não possui repositório git')
-          return false
-        }
-      }
-    },
-    loadRespositories () {
-      let vm = this
-      let queryGet = `{
+        let vm = this
+        let queryGet = `{
                         user(login: "` + vm.userLogin + `") {
                           id
                         }
                       }`
-      axios.post(vm.url, { query: queryGet }, { headers: { Authorization: 'Bearer ' + vm.token } })
-        .then((response) => {
-          return response.data.data.user.id
-        })
-        .catch((error) => {
-          console.log(error)
-          return ''
-        })
+        axios.post(vm.url, { query: queryGet }, { headers: { Authorization: 'Bearer ' + vm.token } })
+          .then((response) => {
+            if ((response.data.data.user.id === null) || (response.data.data.user.id === '')) {
+              alert('O usuário digitado não possui repositório git')
+              return
+            } else {
+              localStorage.userLogin = vm.userLogin
+              router.push({ name: 'home' })
+            }
+            return response.data.data.user.id
+          })
+          .catch((error) => {
+            console.log(error)
+            alert('Ocorreu um erro ao tentar buscar')
+          })
+      }
     }
   },
   mounted () {
