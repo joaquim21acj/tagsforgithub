@@ -14,10 +14,11 @@
         <template v-slot:cell(Language)="data">
           <p v-for="(item) in  data.item.node.languages.edges" :key="item.node.name">{{ item.node.name }}</p>
         </template>
-        <!-- <template v-slot:cell()="data" >
-          <p v-if="data.item.node.tags != null">{{ data.item.node.tags }}</p>
-          <p v-else>Adicione</p>
-        </template> -->
+        <template v-slot:cell(Tags)="data" >
+          <p v-for="(item) in  data.item.node.tags" :key="item.tag">{{ item.tag }}</p>
+          <!-- <p v-if="data.item.node.tags != null">{{ data.item.node.tags }}</p>
+          <p v-else>Adicione</p> -->
+        </template>
         <template v-slot:cell(Tools)="data">
           <button v-on:click="editTags(data.item, $event.target)">Edit</button>
         </template>
@@ -32,7 +33,7 @@
         >
           <b-form-input
             id="inputTags"
-            v-model="itemEdit.tags"
+            v-model="itemEdit"
             placeholder="tags"
           ></b-form-input>
         </b-form-group>
@@ -57,7 +58,7 @@ export default {
   // },
   data: function () {
     return {
-      url: 'https://api.github.com/graphql',
+      url: 'http://localhost:3000/api/v1/tags?userLogin=',
       list: [],
       fields: [
         { key: 'Repository', sortable: true },
@@ -82,41 +83,23 @@ export default {
   methods: {
     loadRespositories () {
       let vm = this
-      let queryGetRepo = `{
-                            user(login: "` + vm.userLogin + `") {
-                              id
-                              starredRepositories(first: 10) {
-                                edges {
-                                  node {
-                                    id
-                                    description
-                                    languages(first: 10) {
-                                      edges {
-                                        node {
-                                          name
-                                        }
-                                      }
-                                    }
-                                    name
-                                    projectsUrl
-                                  }
-                                }
-                              }
-                            }
-                          }`
-
-      axios.post(vm.url, { query: queryGetRepo }, { headers: { Authorization: 'Bearer ' + vm.token } })
+      axios.get(vm.url + vm.userLogin)
         .then((response) => {
-          vm.list = response.data.data.user.starredRepositories.edges
+          vm.list = response.data.user.starredRepositories.edges
         })
         .catch((error) => {
-          alert('Houve um erro ao buscar os dados no git')
+          alert('Houve um erro ao buscar os dados na api')
           console.log(error)
         })
     },
     editTags (data, button) {
-      console.log(data.node)
-      this.itemEdit = data.node
+      console.log(data.node.tags)
+      let tempItem = ''
+      for (let tag in data.node.tags) {
+        tempItem = tempItem + data.node.tags[tag].tag + '; '
+      }
+      this.modalEdit.item = data.node
+      this.itemEdit = tempItem
       this.showForm = true
       this.$root.$emit('bv::show::modal', this.modalEdit.id, button)
     },
@@ -125,7 +108,27 @@ export default {
       this.$root.$emit('bv::hide::modal', this.modalEdit.id, button)
     },
     saveTags (data, button) {
-      alert('salvo')
+      let vm = this
+      vm.itemEdit = vm.itemEdit.replace(' ', '')
+      let result = vm.itemEdit.split(';')
+      let listTags = []
+      for (let i in result) {
+        let tag = {
+          'tag': result[i]
+        }
+        listTags.push(tag)
+      }
+
+      vm.modalEdit.item.tags = listTags
+      axios.patch(vm.url + vm.userLogin, vm.modalEdit.item)
+        .then((response) => {
+          alert('salvo')
+        })
+        .catch((error) => {
+          alert('Houve um erro ao buscar os dados na api')
+          console.log(error)
+        })
+      vm.$root.$emit('bv::hide::modal', this.modalEdit.id, button)
     }
   },
   mounted () {
