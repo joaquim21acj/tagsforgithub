@@ -5,6 +5,7 @@
       <div style="width: 20%;">
         <b-form-input v-model="searchText" @keyup="filterTable" placeholder="Search by tag"></b-form-input>
       </div>
+      <!-- Tabela dos repositorios -->
       <b-table striped hover :fields="fields" :items="filteredList">
       <template v-slot:cell(Repository)="data">
           {{ data.item.node.name }}
@@ -23,6 +24,7 @@
         </template>
       </b-table>
     </div>
+    <!-- Modal de edição -->
     <b-modal :id="modalEdit.id" :title="modalEdit.label + modalEdit.item.name" :hide-footer="true">
       <b-form @submit="saveTags" @reset="reset">
         <b-form-group
@@ -77,9 +79,11 @@ export default {
   methods: {
     loadRespositories () {
       let vm = this
+      // Carrega repositório usando a url local
       axios.get(vm.url + vm.userLogin)
         .then((response) => {
           vm.list = response.data.user.starredRepositories.edges
+          // Um lista com os itens originais e outra com os itens filtrados
           vm.filteredList = response.data.user.starredRepositories.edges
         })
         .catch((error) => {
@@ -89,6 +93,7 @@ export default {
     },
     editTags (data, button) {
       console.log(data.node.tags)
+      // Popula o campo de tags
       let tempItem = ''
       for (let tag in data.node.tags) {
         tempItem = tempItem + data.node.tags[tag].tag + '; '
@@ -99,11 +104,13 @@ export default {
       this.$root.$emit('bv::show::modal', this.modalEdit.id, button)
     },
     reset (data, button) {
+      // Reseta a modal
       this.itemEdit = {}
       this.$root.$emit('bv::hide::modal', this.modalEdit.id, button)
     },
     saveTags (data, button) {
       let vm = this
+      // Transforma a string do campo em lista de tags
       vm.itemEdit = vm.itemEdit.replace(' ', '')
       let result = vm.itemEdit.split(';')
       let listTags = []
@@ -113,8 +120,9 @@ export default {
         }
         listTags.push(tag)
       }
-
-      vm.modalEdit.item.tags = listTags
+      // Remoção de itens duplicados
+      let uniqueListTags = [...new Set(listTags)]
+      vm.modalEdit.item.tags = uniqueListTags
       axios.patch(vm.url + vm.userLogin, vm.modalEdit.item)
         .then((response) => {
           alert('salvo')
@@ -123,12 +131,15 @@ export default {
           alert('Houve um erro ao buscar os dados na api')
           console.log(error)
         })
+      // Esconde a modal
       vm.$root.$emit('bv::hide::modal', this.modalEdit.id, button)
     },
     filterTable () {
       let vm = this
       if (vm.searchText !== '') {
         vm.filteredList = []
+        // Filtro de texto usando o campo de tags
+        // percorre todos os itens e vê se o item possui o valor desejado
         vm.list.forEach(item => {
           item.node.tags.forEach(itemTag => {
             if (itemTag.tag.toLowerCase().includes(this.searchText.toLowerCase())) {
@@ -143,9 +154,11 @@ export default {
   },
   mounted () {
     let vm = this
+
+    // Carregamento basico do user e do token (nao implementado)
     vm.userLogin = localStorage.userLogin
     vm.token = localStorage.token
-
+    // Carrega os repositórios
     vm.loadRespositories()
   }
 }

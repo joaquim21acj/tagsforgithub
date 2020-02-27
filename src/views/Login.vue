@@ -26,6 +26,7 @@ export default {
   },
   methods: {
     validateUserlogin () {
+      // Função que valida se o usuário tem cadastro no git
       let vm = this
       if ((vm.userLogin === null) || (vm.userLogin === '')) {
         alert('Preencha o nome de usuário')
@@ -40,9 +41,11 @@ export default {
         axios.post(vm.url, { query: queryGet }, { headers: { Authorization: 'Bearer ' + vm.token } })
           .then((response) => {
             if ((response.data.data.user.id === null) || (response.data.data.user.id === '')) {
+              // Mensagem de erro caso usuário não possua cadastro no git
               alert('O usuário digitado não possui repositório git')
               return
             } else {
+              // Redirecionamento quando o usuário é validado
               localStorage.userLogin = vm.userLogin
               localStorage.listar = true
               router.push({ name: 'home' })
@@ -58,6 +61,7 @@ export default {
   },
   mounted () {
     let vm = this
+    // Adição do token no localStorage
     localStorage.token = vm.token
   }
 }
