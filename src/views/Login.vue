@@ -1,6 +1,5 @@
 <template>
   <div class="Login">
-    <!-- <h1>{{ msg }}</h1> -->
     <label for="basic-url">Please tipe your username from github</label>
     <div class="input-group mb-3">
       <div class="input-group-prepend">
@@ -15,16 +14,13 @@
 <script>
 import router from '../router'
 import axios from 'axios'
-// import gql from 'graphql.macro'
+
 export default {
   name: 'Login',
-  props: {
-    msg: String
-  },
   data: function () {
     return {
       url: 'https://api.github.com/graphql',
-      token: 'daba0d333d063bbb02869d055daa2583024caf05   ',
+      token: 'a232abbb5b93c77a39b3aafd4803660fdb1f2724',
       userLogin: ''
     }
   },
@@ -48,6 +44,7 @@ export default {
               return
             } else {
               localStorage.userLogin = vm.userLogin
+              localStorage.listar = true
               router.push({ name: 'home' })
             }
             return response.data.data.user.id
