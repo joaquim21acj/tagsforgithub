@@ -1,34 +1,23 @@
-# frontend
+# Tags for git
 
-## Project setup
+Aplicação em Vue.js para visualizar repositórios curtidos pelo usuário no GitHub. Além de visualizar, o usuário pode adicionar tags para organizar melhor os seus repositórios curtidos.
+
+## Para instalar rode:
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Compilar e executar:
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### Compilar para produção:
 ```
 npm run build
 ```
 
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
+### Rodar o linter:
 ```
 npm run lint
 ```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
