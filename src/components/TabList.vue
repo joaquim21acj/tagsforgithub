@@ -92,7 +92,6 @@ export default {
         })
     },
     editTags (data, button) {
-      console.log(data.node.tags)
       // Popula o campo de tags
       let tempItem = ''
       for (let tag in data.node.tags) {
@@ -111,8 +110,10 @@ export default {
     saveTags (data, button) {
       let vm = this
       // Transforma a string do campo em lista de tags
-      vm.itemEdit = vm.itemEdit.replace(' ', '')
+      vm.itemEdit = vm.itemEdit.replace(/\s/g, '')
       let result = vm.itemEdit.split(';')
+      // Remoção de itens duplicados
+      result = Array.from(new Set(result))
       let listTags = []
       for (let i in result) {
         let tag = {
@@ -120,9 +121,7 @@ export default {
         }
         listTags.push(tag)
       }
-      // Remoção de itens duplicados
-      let uniqueListTags = [...new Set(listTags)]
-      vm.modalEdit.item.tags = uniqueListTags
+      vm.modalEdit.item.tags = listTags
       axios.patch(vm.url + vm.userLogin, vm.modalEdit.item)
         .then((response) => {
           alert('salvo')
